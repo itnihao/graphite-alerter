@@ -1,0 +1,1 @@
+# graphite alerter like nagios
