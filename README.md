@@ -1,1 +1,1 @@
-# graphite alerter like nagios
+# Graphite alerter like nagios
