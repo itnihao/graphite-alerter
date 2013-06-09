@@ -59,3 +59,8 @@ def load_plugins(metrics = None):
 
 
     return plugins_
+
+def do(plugin, target, metric):
+#    logging.info('[%s] %s: %s < %s < %s is False' % \
+#        (plugin.name, metric.name, target.min, metric.value, target.max))
+    pass

@@ -1,25 +1,37 @@
 #!/usr/bin/env python
 
 import time
-from utils import load_metrics, load_plugins, logging
+import threading
+from threading import Thread
+from utils import load_metrics, load_plugins, logging, do
+
+import schedule
 
 metrics = plugins = None
 
-def checker(plugin):
+def fetch():
+
+    global plugins
+    for plugin in plugins:
+        for target in plugin.targets:
+            for metric in target.metrics:
+                metric.curr = metric.value
+    logging.info('refreshing metrics...')
+
+
+def check(plugin):
 
     while True:
-        for t in plugin.targets:
-            for m in t.metrics:
-                curr = m.value
-                logging.info('[%s] %s: %s < %s < %s' % (plugin.name, m.name, t.min, curr, t.max))
-                if t.min <= curr <= t.max:
-                    m.retry = 0
+        for target in plugin.targets:
+            for metric in target.metrics:
+                logging.info('[%s] [%s]' % (plugin.name, metric.name))
+                if target.min <= metric.curr <= target.max:
+                    metric.retry = 0
                 else:
-                    m.retry += 1
-#                if m.retry == 3:
-#                    logging.info('[%s] %s: %s < %s < %s is False' % \
-#                        (plugin.name, m.name, t.min, curr, t.max))
-        time.sleep(1)
+                    metric.retry += 1
+                if metric.retry > 3:
+                    do(plugin, target, metric)
+        time.sleep(5)
 
 
 def main():
@@ -30,10 +42,17 @@ def main():
     global plugins
     plugins = load_plugins(metrics)
 
-    p = plugins[0]
+    fetch() # fetch first
 
+    for plugin in plugins:
+        t = Thread(target = check, args = (plugin, ))
+        t.setDaemon(True)
+        t.start()
 
-    checker(p)
-
+    # always infinitely
+    schedule.every(10).seconds.do(fetch)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 main()
