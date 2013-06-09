@@ -1,6 +1,6 @@
 targets = [
     {
-        'match' : '^servers\.dis1.*loadavg\.01$',
+        'match' : '^servers.*loadavg\.01$',
         'max' : 10,
         'min' : 0,
         'retry' : 3,

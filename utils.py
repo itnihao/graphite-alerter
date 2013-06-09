@@ -13,7 +13,7 @@ def load_metrics():
         logging.info('Loading metrics...')
         response = urllib2.urlopen("%s/metrics/index.json" % config.graphite_url)
         metrics = json.loads(response.read())
-        logging.info(' - %s metrics found' % len(metrics))
+        logging.info(' - %s metrics' % len(metrics))
         return metrics
     except:
         logging.info('Loading metrics error, exit')
