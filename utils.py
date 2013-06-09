@@ -24,6 +24,7 @@ def load_plugins(metrics = None):
     import plugins
 
     plugins_ = []
+    metrics_matched = {}
 
     plugins_dir = os.path.dirname(plugins.__file__)
 
@@ -44,10 +45,14 @@ def load_plugins(metrics = None):
             for t in plugin.targets:
                 for m in metrics:
                     if t.match_obj.match(m):
-                        t.metrics.append(Metric(t))
+                        if metrics_matched.has_key(m): # won't match twice
+                            continue
+                        else:
+                            metric = Metric(m)
+                            metrics_matched[m] = metric
+                            t.metrics.append(metric)
                 logging.info('   - target: "%s", metrics: %s' % (t.match, len(t.metrics)))
             plugins_.append(plugin)
-
 
         except:
             logging.info(' - ERROR occur when loading plugin [ %s ]' % module)
