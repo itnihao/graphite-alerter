@@ -11,7 +11,7 @@ def main():
     metrics = load_metrics()
 
     global plugins
-    plugins = load_plugins()
+    plugins = load_plugins(metrics)
 
 
 main()

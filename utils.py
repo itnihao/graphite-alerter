@@ -32,14 +32,25 @@ def load_plugins(metrics = None):
         if f == '__init__.py' or not f.endswith(".py"):
             continue
         try:
-            module = f[:-3]
-            imp = __import__('plugins.' + module, globals(), locals(), ['*'])
+            name = f[:-3]
+            imp = __import__('plugins.' + name, globals(), locals(), ['*'])
             assert(hasattr(imp, 'targets'))
-            logging.info(' - plugin [%s]' % module)
-            plugin = Plugin(name = module)
+            plugin = Plugin(name)
+
+            logging.info(' - plugin [%s]' % name)
+            for t in imp.targets:
+                plugin.targets.append(Target(**t))
+
+            for t in plugin.targets:
+                for m in metrics:
+                    if t.match_obj.match(m):
+                        t.metrics.append(Metric(t))
+                logging.info('   - target: "%s", metrics: %s' % (t.match, len(t.metrics)))
+            plugins_.append(plugin)
+
+
         except:
             logging.info(' - ERROR occur when loading plugin [ %s ]' % module)
-
 
 
     return plugins_

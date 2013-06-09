@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-import json, urllib2
+import json, urllib2, re
 import config
 
 
@@ -21,6 +21,7 @@ class Target:
     
     def __init__(self, match, max, min, retry = 3):
         self.match = match
+        self.match_obj = re.compile(self.match)
         self.max = max
         self.min = min
         self.retry = retry
