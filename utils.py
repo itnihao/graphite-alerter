@@ -10,13 +10,13 @@ logging.basicConfig(format = '[%(asctime)s] %(msg)s', level = logging.DEBUG)
 
 def load_metrics():
     try:
-        logging.info('Downloading metrics...')
+        logging.info('Loading metrics...')
         response = urllib2.urlopen("%s/metrics/index.json" % config.graphite_url)
         metrics = json.loads(response.read())
         logging.info(' - %s metrics found' % len(metrics))
         return metrics
     except:
-        logging.info('Downloading metrics error, exit')
+        logging.info('Loading metrics error, exit')
         sys.exit(1)
 
 
