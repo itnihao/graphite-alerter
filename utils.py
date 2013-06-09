@@ -14,6 +14,7 @@ def load_metrics():
         response = urllib2.urlopen("%s/metrics/index.json" % config.graphite_url)
         metrics = json.loads(response.read())
         logging.info(' - %s metrics' % len(metrics))
+
         return metrics
     except:
         logging.info('Loading metrics error, exit')
@@ -52,15 +53,18 @@ def load_plugins(metrics = None):
                             metrics_matched[m] = metric
                             t.metrics.append(metric)
                 logging.info('   - target: "%s", metrics: %s' % (t.match, len(t.metrics)))
-            plugins_.append(plugin)
 
+            plugins_.append(plugin)
         except:
             logging.info(' - ERROR occur when loading plugin [ %s ]' % module)
-
 
     return plugins_
 
 def do(plugin, target, metric):
-#    logging.info('[%s] %s: %s < %s < %s is False' % \
-#        (plugin.name, metric.name, target.min, metric.value, target.max))
-    pass
+    logging.info('[%s] %s: %s < %s < %s is False, retry: %s' % \
+        (plugin.name, metric.name, target.min, metric.value, target.max, metric.retry))
+
+
+
+
+

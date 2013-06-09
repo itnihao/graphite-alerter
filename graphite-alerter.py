@@ -24,13 +24,14 @@ def check(plugin):
     while True:
         for target in plugin.targets:
             for metric in target.metrics:
-                logging.info('[%s] [%s]' % (plugin.name, metric.name))
+#                logging.info('[%s] [%s]' % (threading.current_thread().name, metric.name))
                 if target.min <= metric.curr <= target.max:
                     metric.retry = 0
                 else:
                     metric.retry += 1
-                if metric.retry > 3:
+                if metric.retry == 3:
                     do(plugin, target, metric)
+                    metric.retry = 0 # re-schedule
         time.sleep(5)
 
 
@@ -56,3 +57,6 @@ def main():
         time.sleep(1)
 
 main()
+
+
+
