@@ -39,7 +39,7 @@
                 <td>{{target.max}}</td>
                 <td>{{target.min}}</td>
                         % import datetime
-                <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%d %H:%M:%S')}}</td>
+                <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%H:%M:%S @ %d')}}</td>
                 <td>{{metric.retry}}/{{target.retry}}</td>
             </tr>
                         % nr += 1
