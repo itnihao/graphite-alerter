@@ -52,10 +52,10 @@
                 <td></td>
                     % end
                     % if retry > 0 and not metric.ack:
-                <td><a class = 'btn btn-small' href = '/ack/{{metric.name}}'>Ack</a></td>
+                <td><a id = '{{metric.name}}' class = 'btn btn-small' href = '/ack/{{metric.name}}'>Ack</a></td>
                     % end
                     % if retry > 0 and metric.ack:
-                <td><a class = 'btn btn-small disabled' href = '{{metric.name}}'>Ack-ed</a></td>
+                <td><a id = '{{metric.name}}' class = 'btn btn-small disabled' href = '{{metric.name}}'>Ack-ed</a></td>
                     % end
             </tr>
                         % nr += 1
@@ -65,4 +65,6 @@
         % end
         <tbody>
     </table>
+    <script>
+    </script>
 </div>

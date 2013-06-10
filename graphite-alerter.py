@@ -6,7 +6,7 @@ from threading import Thread
 from collections import deque
 from signal import signal, SIGINT
 
-from bottle import route, run, template, static_file, request
+from bottle import route, run, template, static_file, request, redirect
 
 from utils import load_metrics, load_plugins, logging, do, update_metric, signal_handler
 from utils import metrics_matched # find metric quickly
@@ -48,6 +48,7 @@ def check():
                     curr = metric.curr
                     if target.min <= curr <= target.max:
                         metric.retry = 0
+                        metric.ack = None
                     else:
                         if metric.retry < target.retry:
                             metric.retry += 1
@@ -85,8 +86,12 @@ def index():
     return render_page(body)
 
 @route('/ack/<metric_name>')
-def ack(metric_name = None)
-    pass
+def ack(metric_name = None):
+    if metric_name is None:
+        return redirect('/')
+    metric = metrics_matched[metric_name]
+    metric.ack = True
+    return redirect(request.headers.get('Referer', '/'))
 
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
