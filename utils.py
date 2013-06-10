@@ -74,7 +74,7 @@ def update_metric(metric):
 
 def signal_handler(signalnum, frame):
     if signalnum == SIGINT:
-        logging.info('Graphite Alert Exiting')
+        logging.info('Graphite Alert Exiting...')
         sys.exit(0)
 
 

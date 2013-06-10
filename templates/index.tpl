@@ -25,6 +25,7 @@
                 <th>Min Value</th>
                 <th>Last Update</th>
                 <th>Retrys</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -40,7 +41,13 @@
                 <td>{{target.min}}</td>
                         % import datetime
                 <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%H:%M:%S / %d')}}</td>
-                <td>{{metric.retry}}/{{target.retry}}</td>
+                % if metric.retry == 0:
+                    % c = 'label label-success'
+                % else:
+                    % c = 'label label-warning'
+                % end
+                <td><span class = '{{c}}'>{{metric.retry}} / {{target.retry}}</span></td>
+                <td><a class = 'btn btn-small' href = '#'>Ack</a></td>
             </tr>
                         % nr += 1
                     % end

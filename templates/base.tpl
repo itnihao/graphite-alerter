@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Graphite observer</title>
+    <title>Graphite Alerter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -22,7 +22,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="/index">Graphite observer</a>
+          <a class="brand" href="/index">Graphite Alerter</a>
           <div class="nav-collapse">
             <ul class="nav">
 	% for (key, title) in [('index', 'Home'), ('debug', 'Debug')]:

@@ -94,6 +94,8 @@ def static(path, method = 'GET'):
 
 def main():
 
+    logging.info('Graphite Alert Starting...')
+
     signal(SIGINT, signal_handler)
 
     global metrics
