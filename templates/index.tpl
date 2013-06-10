@@ -16,33 +16,37 @@
 </div>
 <div id = 'info'>
     <table class = 'table table-bordered table-striped table-hover'>
-        <tr>
-            <th>#</th>
-            <th>Metric Name</th>
-            <th>Current Value</th>
-            <th>Max Value</th>
-            <th>Min Value</th>
-            <th>Last Update</th>
-            <th>Retrys</th>
-        </tr>
-    % for plugin in plugins:
-        % for target in plugin.targets:
-            % for metric in target.metrics:
-                % if show == 'all' or (show == 'critical' and metric.retry):
-        <tr>
-            <td>{{nr}}</td>
-            <td>{{metric.name}}</td>
-            <td>{{metric.curr}}</td>
-            <td>{{target.max}}</td>
-            <td>{{target.min}}</td>
-                    % import datetime
-            <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%d %H:%M:%S')}}</td>
-            <td>{{metric.retry}}/{{target.retry}}</td>
-        </tr>
-                    % nr += 1
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Metric Name</th>
+                <th>Current Value</th>
+                <th>Max Value</th>
+                <th>Min Value</th>
+                <th>Last Update</th>
+                <th>Retrys</th>
+            </tr>
+        </thead>
+        <tbody>
+        % for plugin in plugins:
+            % for target in plugin.targets:
+                % for metric in target.metrics:
+                    % if show == 'all' or (show == 'critical' and metric.retry):
+            <tr>
+                <td>{{nr}}</td>
+                <td>{{metric.name}}</td>
+                <td>{{metric.curr}}</td>
+                <td>{{target.max}}</td>
+                <td>{{target.min}}</td>
+                        % import datetime
+                <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%d %H:%M:%S')}}</td>
+                <td>{{metric.retry}}/{{target.retry}}</td>
+            </tr>
+                        % nr += 1
+                    % end
                 % end
             % end
         % end
-    % end
+        <tbody>
     </table>
 </div>

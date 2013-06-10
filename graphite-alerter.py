@@ -4,11 +4,13 @@ import time
 import threading
 from threading import Thread
 from collections import deque
-from utils import load_metrics, load_plugins, logging, do, update_metric
-from utils import metrics_matched # find metric quickly
-import config
+from signal import signal, SIGINT
 
 from bottle import route, run, template, static_file, request
+
+from utils import load_metrics, load_plugins, logging, do, update_metric, signal_handler
+from utils import metrics_matched # find metric quickly
+import config
 
 metrics = plugins = None
 messages = deque()
@@ -23,7 +25,8 @@ def fetch():
     global ready
     global plugins
     while True:
-        logging.info('fetching metrics...')
+        if config.debug:
+            logging.debug('fetching metrics...')
         for plugin in plugins:
             for target in plugin.targets:
                 for metric in target.metrics:
@@ -36,11 +39,10 @@ def check():
 
     while True:
         if config.debug:
-            logging.info('checking metrics...')
+            logging.debug('checking metrics...')
         for plugin in plugins:
             for target in plugin.targets:
                 for metric in target.metrics:
-    #                logging.info('[%s] [%s]' % (threading.current_thread().name, metric.name))
                     if metric.curr is None:
                         update_metric(metric)
                     curr = metric.curr
@@ -60,7 +62,8 @@ def alert():
     while True:
         curr_len = len(messages)
         cnt = 0
-        logging.info('alerting metrics(%s)...' % curr_len)
+        if config.debug:
+            logging.debug('alerting metrics(%s)...' % curr_len)
         while cnt < curr_len:
             msg = messages.popleft()
             do(msg)
@@ -90,6 +93,8 @@ def static(path, method = 'GET'):
 ## main thread
 
 def main():
+
+    signal(SIGINT, signal_handler)
 
     global metrics
     metrics = load_metrics()

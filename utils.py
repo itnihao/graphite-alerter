@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import json, logging, urllib2, sys, os, time
+from signal import SIGINT
 
 import config
 from models import Metric, Target, Plugin
@@ -11,14 +12,14 @@ logging.basicConfig(format = '[%(asctime)s] %(msg)s', level = logging.DEBUG)
 
 def load_metrics():
     try:
-        logging.info('Loading metrics...')
+        logging.debug('Loading metrics...')
         response = urllib2.urlopen("%s/metrics/index.json" % config.graphite_url)
         metrics = json.loads(response.read())
         logging.info(' - %s metrics' % len(metrics))
 
         return metrics
     except:
-        logging.info('Loading metrics error, exit')
+        logging.debug('Loading metrics error, exit')
         sys.exit(1)
 
 
@@ -30,7 +31,7 @@ def load_plugins(metrics = None):
 
     plugins_dir = os.path.dirname(plugins.__file__)
 
-    logging.info('Loading plugins...')
+    logging.debug('Loading plugins...')
     for f in os.listdir(plugins_dir):
         if f == '__init__.py' or not f.endswith(".py"):
             continue
@@ -57,7 +58,7 @@ def load_plugins(metrics = None):
 
             plugins_.append(plugin)
         except:
-            logging.info(' - ERROR occur when loading plugin [ %s ]' % module)
+            logging.debug(' - ERROR occur when loading plugin [ %s ]' % module)
 
     return plugins_
 
@@ -70,5 +71,10 @@ def update_metric(metric):
     metric.curr = metric.value
     metric.last_update = time.time()
 
+
+def signal_handler(signalnum, frame):
+    if signalnum == SIGINT:
+        logging.info('Graphite Alert Exiting')
+        sys.exit(0)
 
 
