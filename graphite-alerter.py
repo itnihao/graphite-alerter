@@ -10,6 +10,8 @@ import schedule
 
 metrics = plugins = None
 
+messages = deque()
+
 def fetch():
 
     global plugins
@@ -28,17 +30,25 @@ def check():
             for target in plugin.targets:
                 for metric in target.metrics:
     #                logging.info('[%s] [%s]' % (threading.current_thread().name, metric.name))
-                    if target.min <= metric.curr <= target.max:
+                    curr = metric.curr
+                    if target.min <= curr <= target.max:
                         metric.retry = 0
                     else:
                         metric.retry += 1
                     if metric.retry == 3:
+                        messages.append({'name':metric.name, 'curr':curr})
                         metric.retry = 0 # re-schedule
         time.sleep(20) # check interval
 
-def alert():
 
-    for plugin in plugins:
+def alert():
+    while True:
+        logging.info('alerting metrics...')
+        try:
+            msg = messages.popleft()
+            do(msg)
+        except IndexError:
+            return
 
 
 def main():
