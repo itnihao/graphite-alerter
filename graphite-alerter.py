@@ -84,6 +84,10 @@ def index():
     body = template('templates/index' , plugins = plugins, show = show)
     return render_page(body)
 
+@route('/ack/<metric_name>')
+def ack(metric_name = None)
+    pass
+
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
 def static(path, method = 'GET'):
