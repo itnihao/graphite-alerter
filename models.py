@@ -12,6 +12,7 @@ class Metric:
         self.retry = 0
         self.curr = None
         self.last_update = None
+        self.ack = None
 
     @property
     def value(self): # return the last point, return -1 if None
