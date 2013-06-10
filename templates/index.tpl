@@ -1,4 +1,5 @@
 % setdefault('show', 'all')
+% setdefault('nr', 1)
 <div id = 'filter' class="well" style="padding: 8px 0;">
     <ul class="nav nav-list">
         <li class="nav-header">Show What ?</li>
@@ -16,10 +17,12 @@
 <div id = 'info'>
     <table class = 'table table-bordered table-striped table-hover'>
         <tr>
+            <th>#</th>
             <th>Metric Name</th>
             <th>Current Value</th>
             <th>Max Value</th>
             <th>Min Value</th>
+            <th>Last Update</th>
             <th>Retrys</th>
         </tr>
     % for plugin in plugins:
@@ -27,12 +30,16 @@
             % for metric in target.metrics:
                 % if show == 'all' or (show == 'critical' and metric.retry):
         <tr>
+            <td>{{nr}}</td>
             <td>{{metric.name}}</td>
             <td>{{metric.curr}}</td>
             <td>{{target.max}}</td>
             <td>{{target.min}}</td>
+                    % import datetime
+            <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%d %H:%M:%S')}}</td>
             <td>{{metric.retry}}/{{target.retry}}</td>
         </tr>
+                    % nr += 1
                 % end
             % end
         % end

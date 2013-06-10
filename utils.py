@@ -1,10 +1,11 @@
 #!/usr/bin/env python2
-import json, logging, urllib2, sys, os
+import json, logging, urllib2, sys, os, time
 
 import config
 from models import Metric, Target, Plugin
 
 
+metrics_matched = {}
 logging.basicConfig(format = '[%(asctime)s] %(msg)s', level = logging.DEBUG)
 
 
@@ -25,7 +26,7 @@ def load_plugins(metrics = None):
     import plugins
 
     plugins_ = []
-    metrics_matched = {}
+    global metrics_matched
 
     plugins_dir = os.path.dirname(plugins.__file__)
 
@@ -65,6 +66,9 @@ def do(msg):
 #    logging.info(' - %s : %s' % (msg['name'], msg['curr']))
 
 
+def update_metric(metric):
+    metric.curr = metric.value
+    metric.last_update = time.time()
 
 
 

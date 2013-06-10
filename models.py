@@ -11,6 +11,7 @@ class Metric:
         self.url = '%s/render/?target=%s&from=-5min&format=json' % (config.graphite_url, self.name)
         self.retry = 0
         self.curr = None
+        self.last_update = None
 
     @property
     def value(self): # return the last point, return -1 if None

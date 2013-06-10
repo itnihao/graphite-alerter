@@ -4,13 +4,15 @@ import time
 import threading
 from threading import Thread
 from collections import deque
-from utils import load_metrics, load_plugins, logging, do
+from utils import load_metrics, load_plugins, logging, do, update_metric
+from utils import metrics_matched # find metric quickly
+import config
 
-from bottle import route, run, template, static_file, default_app, request
+from bottle import route, run, template, static_file, request
 
 metrics = plugins = None
-
 messages = deque()
+ready = False
 
 
 ## 3 daemons
@@ -18,26 +20,29 @@ messages = deque()
  # fetch each metric value
 def fetch():
 
+    global ready
     global plugins
     while True:
+        logging.info('fetching metrics...')
         for plugin in plugins:
             for target in plugin.targets:
                 for metric in target.metrics:
-                    metric.curr = metric.value
-        logging.info('fetching metrics...')
+                    update_metric(metric)
+        ready = True
         time.sleep(10)
 
  # check each metrics and update retry ...
 def check():
 
     while True:
-        logging.info('checking metrics...')
+        if config.debug:
+            logging.info('checking metrics...')
         for plugin in plugins:
             for target in plugin.targets:
                 for metric in target.metrics:
     #                logging.info('[%s] [%s]' % (threading.current_thread().name, metric.name))
                     if metric.curr is None:
-                        metric.curr = metric.value
+                        update_metric(metric)
                     curr = metric.curr
                     if target.min <= curr <= target.max:
                         metric.retry = 0
@@ -64,7 +69,6 @@ def alert():
 
 
 ## web
-
 
 def render_page(body, page = 'index'):
     return str(template('templates/base', body = body, page = page))
@@ -108,7 +112,11 @@ def main():
     t.setDaemon(True)
     t.start()
 
-    run(host = '0.0.0.0', port = 8080)
+    while True:
+        global ready
+        if ready:
+            run(host = config.listen_host, port = int(config.listen_port))
+        time.sleep(1)
 
 
 if __name__ == '__main__' :
