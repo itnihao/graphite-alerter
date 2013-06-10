@@ -61,7 +61,8 @@ def load_plugins(metrics = None):
     return plugins_
 
 def do(msg):
-    logging.info(' - %s : %s' % (msg['name'], msg['curr']))
+    pass
+#    logging.info(' - %s : %s' % (msg['name'], msg['curr']))
 
 
 
