@@ -6,7 +6,7 @@ from threading import Thread
 from collections import deque
 from utils import load_metrics, load_plugins, logging, do
 
-from bottle import route, run, template, static_file, default_app
+from bottle import route, run, template, static_file, default_app, request
 
 metrics = plugins = None
 
@@ -27,7 +27,6 @@ def fetch():
         logging.info('fetching metrics...')
         time.sleep(10)
 
-
  # check each metrics and update retry ...
 def check():
 
@@ -43,12 +42,12 @@ def check():
                     if target.min <= curr <= target.max:
                         metric.retry = 0
                     else:
-                        metric.retry += 1
+                        if metric.retry < target.retry:
+                            metric.retry += 1
                     if metric.retry == 3:
                         messages.append({'name':metric.name, 'curr':curr})
-                        metric.retry = 0 # re-schedule
+#                        metric.retry = 0 # re-schedule
         time.sleep(10) # check interval
-
 
 # alert for each "critical" messages
 def alert():
@@ -66,10 +65,25 @@ def alert():
 
 ## web
 
-@route('/hello/<name>')
-def index(name = 'world'):
-    return template('<b>Hello {{name}}</b>!' , name = name)
 
+def render_page(body, page = 'index'):
+    return str(template('templates/base', body = body, page = page))
+
+@route('/')
+@route('/index')
+def index():
+    global plugins
+    show = request.query.get('show', 'all')
+    body = template('templates/index' , plugins = plugins, show = show)
+    return render_page(body)
+
+@route('<path:re:/static/css/.*css>')
+@route('<path:re:/static/js/.*js>')
+def static(path, method = 'GET'):
+    return static_file(path, root = '.')
+
+
+## main thread
 
 def main():
 
