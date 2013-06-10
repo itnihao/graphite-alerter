@@ -6,22 +6,29 @@ from threading import Thread
 from collections import deque
 from utils import load_metrics, load_plugins, logging, do
 
-import schedule
+from bottle import route, run, template, static_file, default_app
 
 metrics = plugins = None
 
 messages = deque()
 
+
+## 3 daemons
+
+ # fetch each metric value
 def fetch():
 
     global plugins
-    for plugin in plugins:
-        for target in plugin.targets:
-            for metric in target.metrics:
-                metric.curr = metric.value
-    logging.info('fetching metrics...')
+    while True:
+        for plugin in plugins:
+            for target in plugin.targets:
+                for metric in target.metrics:
+                    metric.curr = metric.value
+        logging.info('fetching metrics...')
+        time.sleep(10)
 
 
+ # check each metrics and update retry ...
 def check():
 
     while True:
@@ -30,6 +37,8 @@ def check():
             for target in plugin.targets:
                 for metric in target.metrics:
     #                logging.info('[%s] [%s]' % (threading.current_thread().name, metric.name))
+                    if metric.curr is None:
+                        metric.curr = metric.value
                     curr = metric.curr
                     if target.min <= curr <= target.max:
                         metric.retry = 0
@@ -38,17 +47,28 @@ def check():
                     if metric.retry == 3:
                         messages.append({'name':metric.name, 'curr':curr})
                         metric.retry = 0 # re-schedule
-        time.sleep(20) # check interval
+        time.sleep(10) # check interval
 
 
+# alert for each "critical" messages
 def alert():
+
     while True:
-        logging.info('alerting metrics...')
-        try:
+        curr_len = len(messages)
+        cnt = 0
+        logging.info('alerting metrics(%s)...' % curr_len)
+        while cnt < curr_len:
             msg = messages.popleft()
             do(msg)
-        except IndexError:
-            return
+            cnt += 1
+        time.sleep(10)
+
+
+## web
+
+@route('/hello/<name>')
+def index(name = 'world'):
+    return template('<b>Hello {{name}}</b>!' , name = name)
 
 
 def main():
@@ -58,8 +78,6 @@ def main():
 
     global plugins
     plugins = load_plugins(metrics)
-
-    fetch() # fetch once
 
     # start fetch
     t = Thread(target = fetch)
@@ -71,13 +89,16 @@ def main():
     t.setDaemon(True)
     t.start()
 
-    # always infinitely
-    schedule.every(10).seconds.do(alert)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # start alert
+    t = Thread(target = alert)
+    t.setDaemon(True)
+    t.start()
 
-main()
+    run(host = '0.0.0.0', port = 8080)
+
+
+if __name__ == '__main__' :
+    main()
 
 
 
