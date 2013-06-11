@@ -97,3 +97,13 @@ def signal_handler(signalnum, frame):
         sys.exit(0)
 
 
+def deepcopy(plugins):
+    return pickle.loads(pickle.dumps(plugins))
+
+
+def readable(num):
+    for x in ['','K','M','G']:
+        if num < 1024.0:
+            return "%3.1f%s" % (num, x)
+        num /= 1024.0
+    return "%3.1f%s" % (num, 'T')
