@@ -24,3 +24,7 @@ cd graphite-alerter
 ./graphite-alerter.py
 ```
 then you will get your page on: `http://<ip>:8081/`
+
+# Debug
+on /debug you will see all plugins details and all metrics matched.
+or edit config.py, set `debug = True`.
