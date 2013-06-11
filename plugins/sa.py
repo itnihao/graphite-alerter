@@ -14,6 +14,7 @@ targets = [
         'match' : '^servers\.dis1.*memory\.MemFree$',
         'max' : 1024,
         'min' : 0,
+        'contacts' : ['webmaster@example.com', ],
     },
 ]
 
