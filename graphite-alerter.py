@@ -109,6 +109,11 @@ def ack(metric_name = None):
     metric.ack = True
     return redirect(request.headers.get('Referer', '/'))
 
+@route('/debug', method = 'GET')
+def debug():
+    body = template('templates/debug' , plugins = plugins)
+    return render_page(body, page = 'debug')
+
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
 def static(path, method = 'GET'):

@@ -73,7 +73,7 @@ def load_plugins_from_cache():
         logging.info('Loading plugins from cache...')
         return pickle.loads(open(config.plugins_cache, 'rb').read())
     except:
-        logging.info('Error: Loading plugins from cache...')
+        logging.info(' - Error: Loading plugins from cache...')
         raise
 
 def do(msg):
