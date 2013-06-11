@@ -1,4 +1,5 @@
 % setdefault('nr', 1)
+% from utils import readable
 <div id = 'debug'>
     <table class = 'table table-bordered table-striped table-hover'>
         <thead>
@@ -21,8 +22,8 @@
                 <td>{{plugin.name}}</td>
                 <td>{{target.match}}</td>
                 <td>{{metric.name}}</td>
-                <td>{{target.max}}</td>
-                <td>{{target.min}}</td>
+                <td>{{readable(target.max)}}</td>
+                <td>{{readable(target.min)}}</td>
                 <td>{{target.retry}}</td>
             </tr>
             % nr += 1

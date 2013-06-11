@@ -1,5 +1,6 @@
 % setdefault('show', 'all')
 % setdefault('nr', 1)
+% from utils import readable
 <div id = 'filter' class="well" style="padding: 8px 0;">
     <ul class="nav nav-list">
         <li class="nav-header">Show What ?</li>
@@ -32,30 +33,31 @@
 % for plugin in plugins:
     % for target in plugin.targets:
         % for metric in target.metrics:
-            % if show == 'all' or (show == 'critical' and metric.retry):
-                % retry = metric.retry
+            % if show == 'all' or \
+            %   (show == 'critical' and metric.retry and \
+            %   (metric.value < target.min or metric.value > target.max)):
             <tr>
                 <td>{{nr}}</td>
                 <td>{{metric.name}}</td>
-                <td>{{metric.value}}</td>
-                <td>{{target.max}}</td>
-                <td>{{target.min}}</td>
+                <td>{{readable(metric.value)}}</td>
+                <td>{{readable(target.max)}}</td>
+                <td>{{readable(target.min)}}</td>
                 % import datetime
                 <td>{{datetime.datetime.fromtimestamp(int(metric.last_update)).strftime('%H:%M:%S / %d')}}</td>
-                % if retry == 0:
+                % if metric.retry == 0:
                     % c = 'label label-success'
                 % else:
                     % c = 'label label-important'
                 % end
-                <td><span class = '{{c}}'>{{retry}} / {{target.retry}}</span></td>
-                % if retry == 0:
+                <td><span class = '{{c}}'>{{metric.retry}} / {{target.retry}}</span></td>
+                % if metric.retry == 0:
                 <td></td>
                 % end
-                % if retry > 0 and not metric.ack:
-                <td><a id = '{{metric.name}}' class = 'btn btn-small' href = '/ack/{{metric.name}}'>Ack</a></td>
+                % if metric.retry > 0 and not metric.ack:
+                <td><a class = 'btn btn-small' href = '/ack/{{metric.name}}'>Ack</a></td>
                 % end
-                % if retry > 0 and metric.ack:
-                <td><a id = '{{metric.name}}' class = 'btn btn-small disabled' href = '{{metric.name}}'>Ack-ed</a></td>
+                % if metric.retry > 0 and metric.ack:
+                <td><a class = 'btn btn-small disabled'>Ack-ed</a></td>
                 % end
             </tr>
                 % nr += 1
