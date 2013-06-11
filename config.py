@@ -3,4 +3,4 @@ listen_host = '0.0.0.0'
 listen_port = 8081
 
 plugins_cache = 'plugins.cache'
-debug = True
+debug = False
