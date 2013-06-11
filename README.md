@@ -1,10 +1,12 @@
 # Graphite Alerter
 Alerter system like nagios
+
 # Screenshot
 * /index
 ![Screenshot](https://raw.github.com/huoxy/graphite-alerter/master/static/image/indexScreenshot.png)
 * /debug
 ![Screenshot](https://raw.github.com/huoxy/graphite-alerter/master/static/image/debugScreenshot.png)
+
 # Configuration
 ```python
 graphite_url = 'http://<ip>:<port>'
@@ -14,6 +16,7 @@ plugins_cache = 'plugins.cache'
 debug = False
 ```
 set your own `graphite_url`
+
 # Running
 After cloning code:
 ```bash
