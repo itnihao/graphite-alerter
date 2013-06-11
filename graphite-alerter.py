@@ -64,28 +64,28 @@ def alert():
         curr_len = len(messages)
         cnt = 0
         if config.debug:
-            logging.debug('alerting metrics(%s)...' % curr_len)
+            logging.debug('alerting metrics...(%s messages)' % curr_len)
         while cnt < curr_len:
             msg = messages.popleft()
             do(msg)
             cnt += 1
         time.sleep(10)
 
-# dumps "plugins"
-def dumps():
+# cache "plugins"
+def cache():
 
     global plugins
     global ready
     while True:
         if ready:
             if config.debug:
-                logging.info('dumping plugins...')
+                logging.info('cacheing plugins...')
             tempfile = config.plugins_cache + '.tmp'
             try:
-                open(tempfile, 'rw').write(pickle.dumps(plugins))
+                open(tempfile, 'wb').write(pickle.dumps(plugins))
                 os.rename(tempfile, config.plugins_cache)
             except:
-                logging.info('Error: dumps plugins')
+                logging.info('Error: cache plugins')
         time.sleep(10)
 
 ## web
@@ -145,7 +145,7 @@ def main():
     t.start()
 
     # start dumps
-    t = Thread(target = dumps)
+    t = Thread(target = cache)
     t.setDaemon(True)
     t.start()
 

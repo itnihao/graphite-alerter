@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-import json, logging, urllib2, sys, os, time
+import json, logging, urllib2, sys, os, time, pickle
 from signal import SIGINT
 
 import config
@@ -61,6 +61,9 @@ def load_plugins(metrics = None):
             logging.debug(' - ERROR occur when loading plugin [ %s ]' % module)
 
     return plugins_
+
+def load_plugins_from_cache():
+    return pickle.loads(open(config.plugins_cache, 'rb').read())
 
 def do(msg):
     pass
