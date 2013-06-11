@@ -6,8 +6,16 @@ import config
 from models import Metric, Target, Plugin
 
 
-metrics_matched = {}
 logging.basicConfig(format = '[%(asctime)s] %(msg)s', level = logging.DEBUG)
+
+
+def find_metric(plugins, name):
+    for plugin in plugins:
+        for target in plugin.targets:
+            for metric in target.metrics:
+                if metric.name == name:
+                    return metric
+    return None
 
 
 def load_metrics():
@@ -27,7 +35,6 @@ def load_plugins(metrics = None):
     import plugins
 
     plugins_ = []
-    global metrics_matched
 
     plugins_dir = os.path.dirname(plugins.__file__)
 
@@ -48,22 +55,26 @@ def load_plugins(metrics = None):
             for t in plugin.targets:
                 for m in metrics:
                     if t.match_obj.match(m):
-                        if metrics_matched.has_key(m): # won't match twice
+                        if find_metric(plugins_, m): # won't match twice
                             continue
                         else:
                             metric = Metric(m)
-                            metrics_matched[m] = metric
                             t.metrics.append(metric)
                 logging.info('   - target: "%s", metrics: %s' % (t.match, len(t.metrics)))
 
             plugins_.append(plugin)
         except:
-            logging.debug(' - ERROR occur when loading plugin [ %s ]' % module)
+            logging.debug('ERROR: Loading plugins [ %s ]' % module)
 
     return plugins_
 
 def load_plugins_from_cache():
-    return pickle.loads(open(config.plugins_cache, 'rb').read())
+    try:
+        logging.info('Loading plugins from cache...')
+        return pickle.loads(open(config.plugins_cache, 'rb').read())
+    except:
+        logging.info('Error: Loading plugins from cache...')
+        raise
 
 def do(msg):
     pass

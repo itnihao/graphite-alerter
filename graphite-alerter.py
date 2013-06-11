@@ -7,9 +7,8 @@ from signal import signal, SIGINT
 
 from bottle import route, run, template, static_file, request, redirect
 
-from utils import load_metrics, load_plugins, logging, do, \
-    update_metric, signal_handler, reset
-from utils import metrics_matched # find metric quickly
+from utils import load_metrics, load_plugins, load_plugins_from_cache, logging, do, \
+    update_metric, signal_handler, reset, find_metric
 import config
 
 metrics = plugins = None
@@ -103,9 +102,10 @@ def index():
 
 @route('/ack/<metric_name>')
 def ack(metric_name = None):
+    global plugins
     if metric_name is None:
         return redirect('/')
-    metric = metrics_matched[metric_name]
+    metric = find_metric(plugins, metric_name)
     metric.ack = True
     return redirect(request.headers.get('Referer', '/'))
 
@@ -127,7 +127,10 @@ def main():
     metrics = load_metrics()
 
     global plugins
-    plugins = load_plugins(metrics)
+    try:
+        plugins = load_plugins_from_cache()
+    except:
+        plugins = load_plugins(metrics)
 
     # start fetch
     t = Thread(target = fetch)
