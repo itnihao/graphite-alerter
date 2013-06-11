@@ -7,6 +7,9 @@ Alerter system like nagios
 * /debug
 ![Screenshot](https://raw.github.com/huoxy/graphite-alerter/master/static/image/debugScreenshot.png)
 
+# Plugin
+TODO
+
 # Configuration
 ```python
 graphite_url = 'http://<ip>:<port>'
@@ -26,5 +29,4 @@ cd graphite-alerter
 then you will get your page on: `http://<ip>:8081/`
 
 # Debug
-on /debug you will see all plugins details and all metrics matched.
-or edit config.py, set `debug = True`.
+on /debug you will see all plugins details and all metrics matched; or edit config.py, set `debug = True`.
