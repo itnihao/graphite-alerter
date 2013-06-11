@@ -124,6 +124,10 @@ def static(path, method = 'GET'):
 
 def main():
 
+    app_dir = os.path.dirname(__file__)
+    if app_dir:
+        os.chdir(app_dir)
+
     logging.info('Graphite Alert Starting...')
 
     signal(SIGINT, signal_handler)
