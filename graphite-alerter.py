@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import time
-import threading
+import time, os, threading, pickle
 from threading import Thread
 from collections import deque
 from signal import signal, SIGINT
-import pickle
 
 from bottle import route, run, template, static_file, request, redirect
 
@@ -74,8 +72,19 @@ def alert():
 
 # dumps "plugins"
 def dumps():
+    global plugins
+    global ready
+    if config.debug:
+        logging.info('dumping plugins...')
     while True:
-        pass
+        if ready:
+            tempfile = config.plugins_cache + '.tmp'
+            try:
+                open(tempfile, 'rw').write(pickle.dumps(plugins))
+                os.rename(tempfile, config.plugins_cache)
+            except:
+                logging.info('Error: dumps plugins')
+        time.sleep(10)
 
 ## web
 
