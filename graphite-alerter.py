@@ -59,6 +59,7 @@ def check():
 # alert for each "critical" messages
 def alert():
 
+    global messages
     while True:
         curr_len = len(messages)
         cnt = 0
@@ -72,12 +73,13 @@ def alert():
 
 # dumps "plugins"
 def dumps():
+
     global plugins
     global ready
-    if config.debug:
-        logging.info('dumping plugins...')
     while True:
         if ready:
+            if config.debug:
+                logging.info('dumping plugins...')
             tempfile = config.plugins_cache + '.tmp'
             try:
                 open(tempfile, 'rw').write(pickle.dumps(plugins))
@@ -139,6 +141,11 @@ def main():
 
     # start alert
     t = Thread(target = alert)
+    t.setDaemon(True)
+    t.start()
+
+    # start dumps
+    t = Thread(target = dumps)
     t.setDaemon(True)
     t.start()
 
