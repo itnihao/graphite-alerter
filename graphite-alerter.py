@@ -8,7 +8,7 @@ from signal import signal, SIGINT
 from bottle import route, run, template, static_file, request, redirect
 
 from utils import load_metrics, load_plugins, load_plugins_from_cache, logging, do, \
-    update_metric, signal_handler, reset, find_metric
+    update_metric, signal_handler, reset, find_metric, deepcopy
 import config
 
 metrics = plugins = None
@@ -97,7 +97,7 @@ def render_page(body, page = 'index'):
 def index():
     global plugins
     show = request.query.get('show', 'all')
-    body = template('templates/index' , plugins = plugins, show = show)
+    body = template('templates/index' , plugins = deepcopy(plugins), show = show)
     return render_page(body)
 
 @route('/ack/<metric_name>')
