@@ -76,9 +76,11 @@ def load_plugins_from_cache():
         logging.info(' - Error: Loading plugins from cache...')
         raise
 
-def do(msg):
+def do(target, metric):
+    if config.debug:
+        logging.info(' - MAILTO: %s, %s - %s' % (target.contacts, metric.name, metric.value))
+    # TODO
     pass
-#    logging.info(' - %s : %s' % (msg['name'], msg['curr']))
 
 
 def update_metric(metric):
@@ -97,8 +99,8 @@ def signal_handler(signalnum, frame):
         sys.exit(0)
 
 
-def deepcopy(plugins):
-    return pickle.loads(pickle.dumps(plugins))
+def picklecopy(obj):
+    return pickle.loads(pickle.dumps(obj))
 
 
 def readable(num):
