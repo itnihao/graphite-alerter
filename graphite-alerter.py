@@ -5,6 +5,7 @@ import threading
 from threading import Thread
 from collections import deque
 from signal import signal, SIGINT
+from copy import deepcopy
 
 from bottle import route, run, template, static_file, request, redirect
 
@@ -82,7 +83,7 @@ def render_page(body, page = 'index'):
 def index():
     global plugins
     show = request.query.get('show', 'all')
-    body = template('templates/index' , plugins = plugins, show = show)
+    body = template('templates/index' , plugins = deepcopy(plugins), show = show)
     return render_page(body)
 
 @route('/ack/<metric_name>')
