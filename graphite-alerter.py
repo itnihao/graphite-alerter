@@ -92,15 +92,15 @@ def cache():
 def render_page(body, page = 'index'):
     return str(template('templates/base', body = body, page = page))
 
-@route('/')
-@route('/index')
+@route('/', method = 'GET')
+@route('/index', method = 'GET')
 def index():
     global plugins
     show = request.query.get('show', 'all')
     body = template('templates/index' , plugins = picklecopy(plugins), show = show)
     return render_page(body)
 
-@route('/ack/<metric_name>')
+@route('/ack/<metric_name>', method = 'GET')
 def ack(metric_name = None):
     global plugins
     if metric_name is None:
@@ -113,6 +113,11 @@ def ack(metric_name = None):
 def debug():
     body = template('templates/debug' , plugins = plugins)
     return render_page(body, page = 'debug')
+
+@route('/meta', method = 'GET')
+def meta():
+    body = template('templates/meta', todo = open('TODO').read())
+    return render_page(body, page = 'meta')
 
 @route('<path:re:/static/css/.*css>')
 @route('<path:re:/static/js/.*js>')
