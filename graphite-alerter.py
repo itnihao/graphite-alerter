@@ -4,11 +4,12 @@ import time, os, threading, pickle
 from threading import Thread
 from collections import deque
 from signal import signal, SIGINT
+from copy import deepcopy
 
 from bottle import route, run, template, static_file, request, redirect
 
 from utils import load_metrics, load_plugins, load_plugins_from_cache, logging, do, \
-    update_metric, signal_handler, reset, find_metric, deepcopy
+    update_metric, signal_handler, reset, find_metric, picklecopy
 import config
 
 metrics = plugins = None
@@ -51,7 +52,7 @@ def check():
                         if metric.retry < target.retry:
                             metric.retry += 1
                     if metric.retry == 3:
-                        messages.append({'name':metric.name, 'value':value})
+                        messages.append((target, deepcopy(metric)))
 #                        metric.retry = 0 # re-schedule
         time.sleep(10) # check interval
 
@@ -65,8 +66,7 @@ def alert():
         if config.debug:
             logging.debug('alerting metrics...(%s messages)' % curr_len)
         while cnt < curr_len:
-            msg = messages.popleft()
-            do(msg)
+            do(*messages.popleft())
             cnt += 1
         time.sleep(10)
 
@@ -97,7 +97,7 @@ def render_page(body, page = 'index'):
 def index():
     global plugins
     show = request.query.get('show', 'all')
-    body = template('templates/index' , plugins = deepcopy(plugins), show = show)
+    body = template('templates/index' , plugins = picklecopy(plugins), show = show)
     return render_page(body)
 
 @route('/ack/<metric_name>')
