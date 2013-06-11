@@ -5,11 +5,12 @@ import threading
 from threading import Thread
 from collections import deque
 from signal import signal, SIGINT
-from copy import deepcopy
+import pickle
 
 from bottle import route, run, template, static_file, request, redirect
 
-from utils import load_metrics, load_plugins, logging, do, update_metric, signal_handler
+from utils import load_metrics, load_plugins, logging, do, \
+    update_metric, signal_handler, reset
 from utils import metrics_matched # find metric quickly
 import config
 
@@ -48,8 +49,7 @@ def check():
                         update_metric(metric)
                     value = metric.value
                     if target.min <= value <= target.max:
-                        metric.retry = 0
-                        metric.ack = None
+                        reset(metric)
                     else:
                         if metric.retry < target.retry:
                             metric.retry += 1
@@ -72,6 +72,10 @@ def alert():
             cnt += 1
         time.sleep(10)
 
+# dumps "plugins"
+def dumps():
+    while True:
+        pass
 
 ## web
 
@@ -83,7 +87,7 @@ def render_page(body, page = 'index'):
 def index():
     global plugins
     show = request.query.get('show', 'all')
-    body = template('templates/index' , plugins = deepcopy(plugins), show = show)
+    body = template('templates/index' , plugins = plugins, show = show)
     return render_page(body)
 
 @route('/ack/<metric_name>')

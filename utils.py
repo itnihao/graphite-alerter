@@ -72,6 +72,11 @@ def update_metric(metric):
     metric.last_update = time.time()
 
 
+def reset(metric):
+    metric.retry = 0
+    metric.ack = None
+
+
 def signal_handler(signalnum, frame):
     if signalnum == SIGINT:
         logging.info('Graphite Alert Exiting...')
