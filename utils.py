@@ -68,7 +68,7 @@ def do(msg):
 
 
 def update_metric(metric):
-    metric.curr = metric.value
+    metric.value = metric.curr
     metric.last_update = time.time()
 
 

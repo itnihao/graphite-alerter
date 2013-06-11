@@ -43,17 +43,17 @@ def check():
         for plugin in plugins:
             for target in plugin.targets:
                 for metric in target.metrics:
-                    if metric.curr is None:
+                    if metric.value is None:
                         update_metric(metric)
-                    curr = metric.curr
-                    if target.min <= curr <= target.max:
+                    value = metric.value
+                    if target.min <= value <= target.max:
                         metric.retry = 0
                         metric.ack = None
                     else:
                         if metric.retry < target.retry:
                             metric.retry += 1
                     if metric.retry == 3:
-                        messages.append({'name':metric.name, 'curr':curr})
+                        messages.append({'name':metric.name, 'value':value})
 #                        metric.retry = 0 # re-schedule
         time.sleep(10) # check interval
 

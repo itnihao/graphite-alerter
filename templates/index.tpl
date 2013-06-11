@@ -20,7 +20,7 @@
             <tr>
                 <th>#</th>
                 <th>Metric Name</th>
-                <th>Current Value</th>
+                <th>Value</th>
                 <th>Max Value</th>
                 <th>Min Value</th>
                 <th>Last Update</th>
@@ -37,7 +37,7 @@
             <tr>
                 <td>{{nr}}</td>
                 <td>{{metric.name}}</td>
-                <td>{{metric.curr}}</td>
+                <td>{{metric.value}}</td>
                 <td>{{target.max}}</td>
                 <td>{{target.min}}</td>
                         % import datetime

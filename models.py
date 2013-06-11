@@ -8,14 +8,14 @@ class Metric:
 
     def __init__(self, name):
         self.name = name
+        self.value = None
         self.url = '%s/render/?target=%s&from=-5min&format=json' % (config.graphite_url, self.name)
         self.retry = 0
-        self.curr = None
         self.last_update = None
         self.ack = None
 
     @property
-    def value(self): # return the last point, return -1 if None
+    def curr(self): # return the last point, return -1 if None
         response = urllib2.urlopen(self.url)
         points = [p for p in json.loads(response.read())[0]['datapoints'] if p[0] is not None]
         return points[-1][0] # maybe None
